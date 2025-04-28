@@ -1,6 +1,4 @@
 
-use bevy::prelude::*;
-
 #[derive(Clone)]
 pub enum Ability {
     SingleTargetDamage,

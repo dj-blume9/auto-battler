@@ -1,22 +1,27 @@
-use bevy::prelude::Bundle;
+use bevy::prelude::{Bundle,Transform};
 use bevy::prelude::Component;
 use super::abilities::Ability;
 use super::card_owner::CardOwner;
-use bevy::prelude::Mut;
 
 #[derive(Bundle)]
 pub struct CardBundle {
-    pub name: CardName,
-    pub attack: Attack,
+    pub card: Card,
+    //pub transform: Transform,
+   }
+
+#[derive(Component)]
+pub struct Card {
+    pub name: String,
     pub health: Health,
+    pub attack: Attack,
     pub speed: Speed,
     pub ability: AbilityComponent,
-    pub owned_by: OwnedBy,
+    pub owned_by: CardOwner,
 }
-
 #[derive(Component)]
 pub struct Health {
     pub current: u32,
+    pub original: u32,
     pub max: u32,
 }
 
@@ -33,9 +38,6 @@ pub struct Speed {
 }
 
 #[derive(Component)]
-pub struct CardName(pub String);
-
-#[derive(Component)]
 pub struct AbilityComponent {
     pub ability: Ability,
 }
@@ -43,12 +45,12 @@ pub struct AbilityComponent {
 #[derive(Component)]
 pub struct InCombat;
 
-#[derive(Component)]
-pub struct OwnedBy {
-    pub owner: CardOwner,
-}
+impl Card {
+    pub fn apply_damage(&mut self, damage: u32) {
+       self.health.current = self.health.current.saturating_sub(damage); 
+    }
 
-pub fn apply_damage(mut health: Mut<Health>, amount: u32) -> bool {
-    health.current = health.current.saturating_sub(amount);
-    health.current == 0
+    pub fn get_attack(&self) -> u32 {
+        self.attack.current
+    }
 }
